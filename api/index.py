@@ -24,8 +24,9 @@ def home():
 
 @app.post("/predict")
 def predict(request: TextRequest):
+
     if not HF_TOKEN:
-        return {"error": "HF_TOKEN not set in environment"}
+        return {"error": "HF_TOKEN not configured in Vercel"}
 
     payload = {"inputs": request.text}
 
@@ -39,13 +40,18 @@ def predict(request: TextRequest):
             json=payload,
             timeout=30
         )
-    except Exception as e:
-        return {"error": f"Request failed: {str(e)}"}
 
-    return {
-        "status_code": response.status_code,
-        "raw_text": response.text  # 🔥 JSON 파싱 안함
-    }
+        if response.status_code != 200:
+            return {
+                "error": "HF API error",
+                "status_code": response.status_code,
+                "response_text": response.text
+            }
+
+        return response.json()
+
+    except Exception as e:
+        return {"exception": str(e)}
 
 
 @app.get("/test", response_class=HTMLResponse)
