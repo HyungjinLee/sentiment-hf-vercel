@@ -6,13 +6,13 @@ import os
 
 app = FastAPI()
 
-HF_API_URL = "https://router.huggingface.co/hf-inference/models/WhitePeak/bert-base-cased-Korean-sentiment"
+HF_API_URL = "https://router.huggingface.co/hf-inference/models/tabularisai/multilingual-sentiment-analysis"
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 headers = {
     "Authorization": f"Bearer {HF_TOKEN}"
-}
 
+}
 class TextRequest(BaseModel):
     text: str
 
