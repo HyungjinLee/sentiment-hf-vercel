@@ -24,11 +24,28 @@ def home():
 
 @app.post("/predict")
 def predict(request: TextRequest):
-    print("HF_TOKEN:", HF_TOKEN)
-    
+    if not HF_TOKEN:
+        return {"error": "HF_TOKEN not set in environment"}
+
     payload = {"inputs": request.text}
-    response = requests.post(HF_API_URL, headers=headers, json=payload)
-    return response.json()
+
+    try:
+        response = requests.post(
+            HF_API_URL,
+            headers={
+                "Authorization": f"Bearer {HF_TOKEN}",
+                "Content-Type": "application/json"
+            },
+            json=payload,
+            timeout=30
+        )
+    except Exception as e:
+        return {"error": f"Request failed: {str(e)}"}
+
+    return {
+        "status_code": response.status_code,
+        "raw_text": response.text  # 🔥 JSON 파싱 안함
+    }
 
 
 @app.get("/test", response_class=HTMLResponse)
