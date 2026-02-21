@@ -24,6 +24,8 @@ def home():
 
 @app.post("/predict")
 def predict(request: TextRequest):
+    print("HF_TOKEN:", HF_TOKEN)
+    
     payload = {"inputs": request.text}
     response = requests.post(HF_API_URL, headers=headers, json=payload)
     return response.json()
